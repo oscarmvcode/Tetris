@@ -227,6 +227,37 @@ body {
   }
 }
 
+/* Optimización para móviles: animaciones más ligeras y mejor rendimiento */
+@media (max-width: 768px) {
+  .cell--filled.cell--I,
+  .cell--filled.cell--O,
+  .cell--filled.cell--T,
+  .cell--filled.cell--S,
+  .cell--filled.cell--Z,
+  .cell--filled.cell--J,
+  .cell--filled.cell--L {
+    animation: none; /* Desactivar animaciones complejas en móviles */
+    will-change: auto; /* Optimizar rendimiento */
+  }
+
+  .cell--ghost {
+    animation: none; /* También desactivar ghost piece animation */
+    will-change: auto;
+  }
+
+  /* Optimizar botones para mejor rendimiento táctil */
+  .arcade-btn {
+    will-change: transform, box-shadow;
+    backface-visibility: hidden;
+    transform: translateZ(0); /* Forzar aceleración por hardware */
+  }
+
+  /* Reducir complejidad visual en móviles */
+  .cell {
+    transition: none; /* Desactivar transiciones suaves para mejor rendimiento */
+  }
+}
+
 @keyframes gameOverPulse {
   0% {
     text-shadow:

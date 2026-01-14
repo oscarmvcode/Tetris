@@ -307,6 +307,12 @@ class TetrisGame {
     this.dropIntervalMs = 800;
     this.timerId = null;
     this.isPaused = false;
+
+    // Optimización para móviles: batch rendering
+    this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    this.needsRender = false;
+    this.lastRenderTime = 0;
+    this.renderThrottleMs = this.isMobile ? 32 : 16; // ~30fps en móvil, 60fps en desktop
   }
 
   start() {
@@ -340,12 +346,14 @@ class TetrisGame {
   moveLeft() {
     if (this._tryMove(0, -1)) {
       this.soundPlayer.play("move");
+      this._renderThrottled();
     }
   }
 
   moveRight() {
     if (this._tryMove(0, 1)) {
       this.soundPlayer.play("move");
+      this._renderThrottled();
     }
   }
 
@@ -373,7 +381,7 @@ class TetrisGame {
     if (this.board.canPlace(clone, 0, 0)) {
       this.activeTetromino = clone;
       this.soundPlayer.play("rotate");
-      this._render();
+      this._renderThrottled();
     }
   }
 
@@ -383,6 +391,10 @@ class TetrisGame {
       if (this.isPaused || this.state.gameOver) return;
       if (!this._tryMove(1, 0)) {
         this._fixAndContinue();
+      }
+      // En móviles, renderizar si es necesario (throttled rendering)
+      if (this.isMobile) {
+        this._renderIfNeeded();
       }
     }, this.dropIntervalMs);
   }
@@ -395,7 +407,13 @@ class TetrisGame {
   }
 
   _updateDropInterval() {
-    this.dropIntervalMs = Math.max(120, 800 - (this.state.level - 1) * 60);
+    // Optimizar para móviles: intervalos más largos en dispositivos móviles
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const baseInterval = isMobile ? 1000 : 800; // Más lento en móviles
+    const minInterval = isMobile ? 200 : 120;   // Mínimo más alto en móviles
+    const decrement = isMobile ? 40 : 60;       // Decremento más lento en móviles
+
+    this.dropIntervalMs = Math.max(minInterval, baseInterval - (this.state.level - 1) * decrement);
   }
 
   _spawnTetromino() {
@@ -462,6 +480,25 @@ class TetrisGame {
     const ghost = this._computeGhost();
     this.renderer.render(this.board, this.activeTetromino, ghost);
     this.hud.update(this.state);
+  }
+
+  _renderThrottled() {
+    // Optimización para móviles: throttle rendering
+    const now = performance.now();
+    if (this.isMobile && (now - this.lastRenderTime) < this.renderThrottleMs) {
+      this.needsRender = true;
+      return;
+    }
+
+    this._render();
+    this.lastRenderTime = now;
+    this.needsRender = false;
+  }
+
+  _renderIfNeeded() {
+    if (this.needsRender) {
+      this._render();
+    }
   }
 
   _gameOver() {

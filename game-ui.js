@@ -322,12 +322,24 @@ class InputHandler {
     });
   }
 
-  // Configuración de eventos para móviles y desktop
+  // Configuración de eventos para móviles y desktop con throttling
   const setupButtonEvents = (button, handler, buttonName) => {
     if (!button) {
       console.log(`Botón ${buttonName} no encontrado`);
       return;
     }
+
+    let lastActivation = 0;
+    const throttleDelay = 100; // ms - más responsivo ahora que optimizamos
+
+    const throttledHandler = () => {
+      const now = Date.now();
+      if (now - lastActivation < throttleDelay) return;
+      lastActivation = now;
+
+      console.log(`Botón ${buttonName} activado`);
+      handler();
+    };
 
     // Usar tanto click como touchstart para máxima compatibilidad
     const events = ['click', 'touchstart'];
@@ -335,12 +347,11 @@ class InputHandler {
     events.forEach(eventType => {
       button.addEventListener(eventType, (e) => {
         e.preventDefault();
-        console.log(`Botón ${buttonName} activado con evento ${eventType}`);
-        handler();
+        throttledHandler();
       }, { passive: false });
     });
 
-    console.log(`Botón ${buttonName} configurado con eventos: ${events.join(', ')}`);
+    console.log(`Botón ${buttonName} configurado con eventos: ${events.join(', ')} (throttle: ${throttleDelay}ms)`);
   };
 
   // Configurar todos los botones
