@@ -274,7 +274,11 @@ body {
 
 /* --- Controles --- */
 .btn-control {
-  min-width: 3rem;
+  min-width: 4rem;
+  min-height: 4rem;
+  /* Optimización para touch en móviles */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Panel de controles tipo maquinitas */
@@ -289,15 +293,15 @@ body {
 }
 
 .arcade-btn {
-  width: 3rem;
-  height: 3rem;
+  width: 4.5rem;
+  height: 4.5rem;
   border-radius: 9999px;
   border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   color: #0f172a;
   box-shadow:
     0 10px 0 rgba(15, 23, 42, 0.9),
@@ -307,6 +311,11 @@ body {
     transform 80ms ease-out,
     box-shadow 80ms ease-out,
     filter 120ms ease-out;
+  /* Optimizaciones para móviles */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .arcade-btn:active {
@@ -331,6 +340,53 @@ body {
 
 .arcade-btn--green {
   background: radial-gradient(circle at 30% 20%, #bbf7d0, #4ade80);
+}
+
+/* --- Optimizaciones globales para móviles --- */
+* {
+  /* Eliminar delay de 300ms en touch */
+  touch-action: manipulation;
+  /* Eliminar highlight azul en iOS */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --- Media Queries para móviles --- */
+@media (max-width: 768px) {
+  .arcade-btn {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.6rem;
+  }
+
+  .btn-control {
+    min-width: 5rem;
+    min-height: 5rem;
+  }
+
+  /* Mejorar usabilidad en tablets */
+  button, .btn {
+    min-height: 44px; /* Recomendación de Apple para touch targets */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .arcade-btn {
+    width: 5.5rem;
+    height: 5.5rem;
+    font-size: 1.8rem;
+  }
+
+  .btn-control {
+    min-width: 5.5rem;
+    min-height: 5.5rem;
+  }
+
+  /* Mejorar usabilidad en móviles pequeños */
+  button, .btn {
+    min-height: 48px; /* Más espacio para dedos grandes */
+  }
 }
 
 /* --- Utilidades --- */

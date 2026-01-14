@@ -306,26 +306,46 @@ class InputHandler {
   }
 
   if (btnRestartOverlay) {
-    btnRestartOverlay.addEventListener("click", () => {
-      console.log("btnRestartOverlay click: Reiniciando juego.");
+    btnRestartOverlay.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      console.log("btnRestartOverlay touch/click: Reiniciando juego.");
       game.start();
     });
   }
 
+  // Optimización para móviles: usar touchstart en lugar de click para eliminar delay de 300ms
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const touchEvent = isMobile ? "touchstart" : "click";
+
   if (btnMobileLeft) {
-    btnMobileLeft.addEventListener("click", () => game.moveLeft());
+    btnMobileLeft.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      game.moveLeft();
+    });
   }
   if (btnMobileRight) {
-    btnMobileRight.addEventListener("click", () => game.moveRight());
+    btnMobileRight.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      game.moveRight();
+    });
   }
   if (btnMobileRotate) {
-    btnMobileRotate.addEventListener("click", () => game.rotate());
+    btnMobileRotate.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      game.rotate();
+    });
   }
   if (btnMobileSoft) {
-    btnMobileSoft.addEventListener("click", () => game.softDrop());
+    btnMobileSoft.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      game.softDrop();
+    });
   }
   if (btnMobileHard) {
-    btnMobileHard.addEventListener("click", () => game.hardDrop());
+    btnMobileHard.addEventListener(touchEvent, (e) => {
+      e.preventDefault();
+      game.hardDrop();
+    });
   }
 
   hud.showMessage("Pulsa Iniciar y juega con las flechas y espacio.");
