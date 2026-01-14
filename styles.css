@@ -1,0 +1,341 @@
+/* --- Layout general --- */
+body {
+  background:
+    radial-gradient(circle at top, rgba(15, 23, 42, 0.9), #020617),
+    repeating-linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.9) 0px,
+      rgba(15, 23, 42, 0.9) 40px,
+      rgba(17, 24, 39, 0.95) 40px,
+      rgba(17, 24, 39, 0.95) 80px
+    );
+  min-height: 100vh;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* --- Área de juego --- */
+#board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+  width: 280px;
+  height: 560px;
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.13), transparent 55%),
+    radial-gradient(circle at bottom, rgba(147, 51, 234, 0.18), transparent 55%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(15, 23, 42, 0.7) 0px,
+      rgba(15, 23, 42, 0.7) 4px,
+      rgba(15, 23, 42, 0.95) 4px,
+      rgba(15, 23, 42, 0.95) 8px
+    );
+  border-radius: 1.1rem;
+  padding: 10px;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.95),
+    0 0 0 3px rgba(15, 23, 42, 0.95),
+    inset 0 0 0 1px rgba(56, 189, 248, 0.25);
+  border: 2px solid rgba(56, 189, 248, 0.75);
+  position: relative;
+  overflow: hidden;
+}
+
+#board::before,
+#board::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: 1.3rem;
+  pointer-events: none;
+}
+
+/* Halo exterior tipo neón */
+#board::before {
+  background:
+    radial-gradient(circle at top, rgba(56, 189, 248, 0.45), transparent 60%),
+    radial-gradient(circle at bottom, rgba(168, 85, 247, 0.55), transparent 60%);
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.9),
+    0 18px 35px rgba(15, 23, 42, 0.9);
+  z-index: -2;
+}
+
+/* Sutil brillo interior */
+#board::after {
+  inset: -2px;
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 0 40px rgba(15, 23, 42, 0.9),
+    inset 0 0 0 2px rgba(56, 189, 248, 0.35);
+  z-index: -1;
+}
+
+.cell {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.35rem;
+  background:
+    radial-gradient(circle at 30% 15%, rgba(248, 250, 252, 0.05), transparent 40%),
+    linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 1)),
+    repeating-linear-gradient(
+      45deg,
+      rgba(15, 23, 42, 0.35) 0px,
+      rgba(15, 23, 42, 0.35) 2px,
+      rgba(30, 64, 175, 0.18) 2px,
+      rgba(30, 64, 175, 0.18) 4px
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 23, 42, 0.9),
+    inset 0 1px 0 rgba(148, 163, 184, 0.2);
+  transition:
+    background 140ms ease-out,
+    border-radius 120ms ease-out,
+    transform 80ms ease-out,
+    box-shadow 80ms ease-out,
+    filter 120ms ease-out;
+}
+
+.cell--filled {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.95),
+    inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+  filter: saturate(1.15);
+  border-radius: 0.3rem;
+  animation: cellGlow 2.2s ease-in-out infinite alternate;
+}
+
+/* Colores por tipo de pieza - paleta neón estilo Daft Punk */
+.cell--I {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(248, 250, 252, 0.45), transparent 45%),
+    linear-gradient(145deg, #22d3ee, #38bdf8),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(0, 0, 0, 0.12) 2px,
+      rgba(0, 0, 0, 0.12) 4px
+    );
+}
+
+.cell--O {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(254, 249, 195, 0.55), transparent 45%),
+    linear-gradient(145deg, #eab308, #facc15),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.15) 0px,
+      rgba(255, 255, 255, 0.15) 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px
+    );
+}
+
+.cell--T {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(243, 232, 255, 0.6), transparent 45%),
+    linear-gradient(145deg, #a855f7, #e879f9),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+}
+
+.cell--S {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(187, 247, 208, 0.55), transparent 45%),
+    linear-gradient(145deg, #22c55e, #4ade80),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(0, 0, 0, 0.12) 2px,
+      rgba(0, 0, 0, 0.12) 4px
+    );
+}
+
+.cell--Z {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(254, 226, 226, 0.55), transparent 45%),
+    linear-gradient(145deg, #ef4444, #fb7185),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0px,
+      rgba(255, 255, 255, 0.08) 2px,
+      rgba(0, 0, 0, 0.18) 2px,
+      rgba(0, 0, 0, 0.18) 4px
+    );
+}
+
+.cell--J {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(219, 234, 254, 0.55), transparent 45%),
+    linear-gradient(145deg, #3b82f6, #60a5fa),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+}
+
+.cell--L {
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 237, 213, 0.6), transparent 45%),
+    linear-gradient(145deg, #f97316, #fb923c),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+}
+
+/* Ghost / preview suave */
+.cell--ghost {
+  opacity: 0.22;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.75);
+  transform: none;
+  filter: grayscale(0.3) brightness(0.9);
+}
+
+/* --- Animaciones "mágicas" neón --- */
+@keyframes cellGlow {
+  0% {
+    box-shadow:
+      0 3px 8px rgba(15, 23, 42, 0.9),
+      0 0 6px rgba(56, 189, 248, 0.3),
+      inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+  }
+  100% {
+    box-shadow:
+      0 6px 14px rgba(15, 23, 42, 0.95),
+      0 0 14px rgba(56, 189, 248, 0.7),
+      inset 0 0 0 1px rgba(15, 23, 42, 1);
+  }
+}
+
+@keyframes gameOverPulse {
+  0% {
+    text-shadow:
+      0 0 8px rgba(248, 250, 252, 0.9),
+      0 0 20px rgba(56, 189, 248, 0.6),
+      0 0 40px rgba(147, 51, 234, 0.6);
+    transform: scale(1);
+  }
+  100% {
+    text-shadow:
+      0 0 14px rgba(248, 250, 252, 1),
+      0 0 35px rgba(56, 189, 248, 1),
+      0 0 60px rgba(147, 51, 234, 1);
+    transform: scale(1.06);
+  }
+}
+
+@keyframes overlaySweep {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-over-title {
+  animation: gameOverPulse 1.4s ease-in-out infinite alternate;
+}
+
+.game-over-panel {
+  animation: overlaySweep 0.45s ease-out forwards;
+}
+
+/* --- Ajustes responsive para móviles --- */
+@media (max-width: 640px) {
+  #board {
+    width: 220px;
+    height: 440px;
+    gap: 2px;
+  }
+}
+
+/* --- Controles --- */
+.btn-control {
+  min-width: 3rem;
+}
+
+/* Panel de controles tipo maquinitas */
+.arcade-panel {
+  background:
+    radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 1)),
+    linear-gradient(145deg, rgba(15, 23, 42, 1), rgba(15, 23, 42, 0.95));
+  box-shadow:
+    0 14px 30px rgba(15, 23, 42, 0.95),
+    0 0 0 2px rgba(15, 23, 42, 0.9),
+    inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+}
+
+.arcade-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #0f172a;
+  box-shadow:
+    0 10px 0 rgba(15, 23, 42, 0.9),
+    0 0 18px rgba(15, 23, 42, 0.9);
+  transform: translateY(0);
+  transition:
+    transform 80ms ease-out,
+    box-shadow 80ms ease-out,
+    filter 120ms ease-out;
+}
+
+.arcade-btn:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 4px 0 rgba(15, 23, 42, 0.85),
+    0 0 10px rgba(15, 23, 42, 0.9);
+  filter: brightness(0.95);
+}
+
+.arcade-btn--yellow {
+  background: radial-gradient(circle at 30% 20%, #fef9c3, #facc15);
+}
+
+.arcade-btn--red {
+  background: radial-gradient(circle at 30% 20%, #fee2e2, #f97373);
+}
+
+.arcade-btn--blue {
+  background: radial-gradient(circle at 30% 20%, #dbeafe, #60a5fa);
+}
+
+.arcade-btn--green {
+  background: radial-gradient(circle at 30% 20%, #bbf7d0, #4ade80);
+}
+
+/* --- Utilidades --- */
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
