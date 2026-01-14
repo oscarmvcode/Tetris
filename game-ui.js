@@ -150,6 +150,14 @@ class InputHandler {
 
 (function bootstrapTetrisApp() {
   console.log("bootstrapTetrisApp: Iniciando inicialización de la app.");
+
+  // Verificar que el DOM esté listo
+  if (document.readyState === 'loading') {
+    console.log("DOM aún cargando, esperando...");
+    document.addEventListener('DOMContentLoaded', () => bootstrapTetrisApp());
+    return;
+  }
+
   const boardEl = document.getElementById("board");
   const scoreEl = document.getElementById("score");
   const linesEl = document.getElementById("lines");
@@ -167,6 +175,15 @@ class InputHandler {
   const btnMobileRotate = document.getElementById("btn-mobile-rotate");
   const btnMobileSoft = document.getElementById("btn-mobile-soft");
   const btnMobileHard = document.getElementById("btn-mobile-hard");
+
+  console.log("Elementos encontrados:", {
+    boardEl: !!boardEl,
+    btnMobileLeft: !!btnMobileLeft,
+    btnMobileRight: !!btnMobileRight,
+    btnMobileRotate: !!btnMobileRotate,
+    btnMobileSoft: !!btnMobileSoft,
+    btnMobileHard: !!btnMobileHard
+  });
 
   const storageAvailable =
     typeof window !== "undefined" &&
@@ -305,48 +322,34 @@ class InputHandler {
     });
   }
 
-  if (btnRestartOverlay) {
-    btnRestartOverlay.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      console.log("btnRestartOverlay touch/click: Reiniciando juego.");
-      game.start();
-    });
-  }
+  // Configuración de eventos para móviles y desktop
+  const setupButtonEvents = (button, handler, buttonName) => {
+    if (!button) {
+      console.log(`Botón ${buttonName} no encontrado`);
+      return;
+    }
 
-  // Optimización para móviles: usar touchstart en lugar de click para eliminar delay de 300ms
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const touchEvent = isMobile ? "touchstart" : "click";
+    // Usar tanto click como touchstart para máxima compatibilidad
+    const events = ['click', 'touchstart'];
 
-  if (btnMobileLeft) {
-    btnMobileLeft.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      game.moveLeft();
+    events.forEach(eventType => {
+      button.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        console.log(`Botón ${buttonName} activado con evento ${eventType}`);
+        handler();
+      }, { passive: false });
     });
-  }
-  if (btnMobileRight) {
-    btnMobileRight.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      game.moveRight();
-    });
-  }
-  if (btnMobileRotate) {
-    btnMobileRotate.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      game.rotate();
-    });
-  }
-  if (btnMobileSoft) {
-    btnMobileSoft.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      game.softDrop();
-    });
-  }
-  if (btnMobileHard) {
-    btnMobileHard.addEventListener(touchEvent, (e) => {
-      e.preventDefault();
-      game.hardDrop();
-    });
-  }
+
+    console.log(`Botón ${buttonName} configurado con eventos: ${events.join(', ')}`);
+  };
+
+  // Configurar todos los botones
+  setupButtonEvents(btnRestartOverlay, () => game.start(), "Restart Overlay");
+  setupButtonEvents(btnMobileLeft, () => game.moveLeft(), "Mobile Left");
+  setupButtonEvents(btnMobileRight, () => game.moveRight(), "Mobile Right");
+  setupButtonEvents(btnMobileRotate, () => game.rotate(), "Mobile Rotate");
+  setupButtonEvents(btnMobileSoft, () => game.softDrop(), "Mobile Soft Drop");
+  setupButtonEvents(btnMobileHard, () => game.hardDrop(), "Mobile Hard Drop");
 
   hud.showMessage("Pulsa Iniciar y juega con las flechas y espacio.");
 })();
